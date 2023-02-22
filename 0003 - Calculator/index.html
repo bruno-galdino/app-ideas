@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Bruno Soares Galdino">
+        <title>CALCULATOR</title>
+        <style>
+
+            @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+            footer{
+
+                text-align: center;
+                margin-top: 20px;
+            }
+            h1{
+                font-family: 'Orbitron', sans-serif;
+                text-align: center;
+            }
+
+            #calculator{
+
+                width: 360px;
+                height: 480px;
+                margin-left: calc(50% - 180px);
+                background-color: #323232;
+                padding: 20px;
+                box-sizing: border-box;
+                border-radius: 10px;
+            }
+
+            #display{
+
+                width: 99%;
+                height: 60px;
+                background-color: #16e74a;
+                border-radius: 5px;
+                font-size: 32px;
+                line-height:60px;
+                font-family: 'Orbitron', sans-serif;
+                text-align:right;
+                padding: 0 5px;
+                box-sizing: border-box;
+            }
+
+            #keypad{
+
+                width: 99%;
+                height: 340px;
+                margin-top: 40px;
+                background-color: #585858;
+                padding: 10px;
+                box-sizing: border-box;
+                border-radius: 4px;
+            }
+
+            #keypad button{
+
+                width: 67px;
+                height:40px;
+                margin: 2px;
+                border: none;
+                font-size: 12pt;
+            }
+
+            .operator-btn{
+
+                background-color: #b6e60b;
+                font-size: 12pt;
+                font-weight: bold;
+            }
+
+            .ac{
+
+                background-color: red;
+                color: #fff;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <h1>MY SIMPLE CALCULATOR</h1>
+            <div id='calculator'>
+                <div id='display'></div>
+                <div id='keypad'>
+                    <div class="key-row">
+                        <button onclick="pressed('7')">7</button>
+                        <button onclick="pressed('8')">8</button>
+                        <button onclick="pressed('9')">9</button>
+                        <button onclick="pressed('+')" class='operator-btn'>+</button>
+                    </div>
+                    <div class="key-row">
+                        <button onclick="pressed('4')">4</button>
+                        <button onclick="pressed('5')">5</button>
+                        <button onclick="pressed('6')">6</button>
+                        <button onclick="pressed('-')" class='operator-btn'>-</button>
+                    </div>
+                    <div class="key-row">
+                        <button onclick="pressed('1')">1</button>
+                        <button onclick="pressed('2')">2</button>
+                        <button onclick="pressed('3')">3</button>
+                        <button onclick="pressed('/')" class='operator-btn'>÷</button>
+                    </div>
+                    <div class="key-row">
+                        <button onclick="pressed('0')">0</button>
+                        <button onclick="pressed('.')">.</button>
+                        <button onclick="pressed('+/-')">+/-</button>
+                        <button onclick="pressed('*')" class='operator-btn'>x</button>
+                    </div>
+                    <div class="key-row">
+                        <button onclick="pressed('AC')" class="ac">AC</button>
+                        <button onclick="pressed('C')" class="ac">C</button>
+                        <button onclick="pressed('π')">π</button>
+                        <button onclick="pressed('=')" class='operator-btn'>=</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer>
+            Developed by <a href='https://github.com/bruno-galdino' target='_blank'>Bruno Soares Galdino</a>
+        </footer>
+        <script>
+
+            let memory = [' ']
+
+
+            document.addEventListener('keydown', e => console.log(e.key))
+            document.addEventListener('keydown', e => pressed(e.key))
+
+            function lastIsOperator(){
+
+                return ['+','-','*','/'].indexOf(memory.at(-1)) > -1
+            }
+
+            function clearAll() {
+
+                memory = [' ']
+            }
+
+            function clear() {
+
+                memory.pop()
+                if(memory.length == 0) memory.push(' ')
+            }
+
+            function updateDisplay(){
+                
+                document.querySelector('#display').innerHTML = memory.at(-1)
+            }
+
+            function calculate(){
+
+                let op2  = Number(memory.pop())
+                let oper = memory.pop()
+                let op1  = Number(memory.pop())
+
+                switch(oper){
+
+                    case '+':
+                        memory.push(op1+op2)
+                        break
+                    case '-':
+                        memory.push(op1-op2)
+                        break
+                    case '*':
+                        memory.push(op1*op2)
+                        break
+                    case '/':
+                        let res = op1/op2
+                        if(op2 == 0) {
+
+                            memory.push('ERR')
+                            return
+                        }
+                        memory.push(res)
+                        break
+                }
+
+                memory[0] = memory[0].toFixed(3).toString().replace('.000','')
+                
+                if(memory[0] > 99999999) memory[0] = 'ERR'
+            }
+
+            function pressed(key){
+
+                if(memory[0] == 'ERR') clearAll()
+                
+                if(['.','0','1','2','3','4','5','6','7','8','9'].indexOf(key) > -1){
+                    
+                    let [integer, decimal] = memory.at(-1).split('.')
+                    
+                    if(['+','-','*','/'].indexOf(memory.at(-1)) > -1) memory.push(' ')//NEW NUMBER
+                    
+                    decimal = decimal || ''
+
+                    if(key == '.' && decimal.length) return //RETURN IF USER TRY TO ENTER A DOT WHEN A DOT ALREDY EXISTS
+                    if(decimal.length == 3) return
+                    if(integer.length == 9 && memory.at(-1).indexOf('.') == -1 && key != '.') return
+                    if(memory[0] === ' 0') memory = [' ']
+                
+
+                    memory[memory.length - 1] += key
+                    
+                }
+                else{
+
+                    switch(key){
+
+                        
+                        case 'Escape':
+                        case 'AC':
+                            clearAll()
+                            break
+                        case 'Backspace':
+                        case 'C':
+                            clear()
+                            break
+                        case 'Enter':
+                        case '=':
+                            if(memory.length == 3) calculate()
+                            break
+                        case '+/-':
+
+                            if(!lastIsOperator()){
+
+                                if(memory[memory.length - 1][0] == '-'){
+
+                                    memory[memory.length - 1] = memory[memory.length - 1].replace('-',' ')
+                                }
+                                else{
+
+                                    memory[memory.length - 1] = memory[memory.length - 1].replace(' ','-')
+                                }
+                                
+                            }
+                            break
+                        case '+':
+                        case '-':
+                        case '*':
+                        case '/':
+
+                            if(memory.length == 1) memory.push(key)
+                            if(memory.length == 2) memory[1] = key
+                            if(memory.length == 3) {
+
+                                calculate()
+                                memory.push(key)
+                            }
+                            break
+                    }
+
+                }
+
+                updateDisplay()
+            }
+
+        </script>
+    </body>
+</html>
